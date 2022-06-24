@@ -27,8 +27,14 @@ workflows:
       - foo
       - bar
     when:
+      # NOTE: this { and: equal: [ "scheduled_pipeline", << pipeline.schedule.name >> ] } is optional.
+      # Alternative below:
+      #   when:
+      #     or:
+      #       - equal: [ scheduled_pipeline, << pipeline.trigger_source >> ]
+      #       - << pipeline.parameters.run-this-workflow >>
       and:
-        - equal: [ scheduled_pipeline, << pipeline.trigger_source >> ]
+        - equal: [ "scheduled_pipeline", << pipeline.schedule.name >> ]
         - or:
-            - equal: [ "scheduled_pipeline", << pipeline.schedule.name >> ]
+            - equal: [ scheduled_pipeline, << pipeline.trigger_source >> ]
             - << pipeline.parameters.run-this-workflow >>
