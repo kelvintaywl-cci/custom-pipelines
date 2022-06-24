@@ -1,0 +1,34 @@
+version: 2.1
+
+# pipeline parameters
+parameters:
+  run-this-workflow:
+    type: boolean
+    default: false
+  
+
+jobs:
+  foo:
+    docker:
+      - image: cimg/base:stable
+    resource_class: small
+    steps:
+      - run: echo FOO
+  bar:
+    docker:
+      - image: cimg/base:stable
+    resource_class: small
+    steps:
+      - run: echo BAR
+
+workflows:
+  scheduled_pipeline:
+    jobs:
+      - foo
+      - bar
+    when:
+      and:
+        - equal: [ scheduled_pipeline, << pipeline.trigger_source >> ]
+        - or:
+            - equal: [ "scheduled_pipeline", << pipeline.schedule.name >> ]
+            - << pipeline.parameters.run-this-workflow >>
